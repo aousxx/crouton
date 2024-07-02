@@ -57,6 +57,9 @@ if tail -n 1 "$log" | grep -q "^Error"; then
     fi
 fi
 
+mkdir -p "$CRASBUILDTMP/cras/src"
+wget https://chromium.googlesource.com/chromiumos/third_party/adhd/+/c2ece09f69565afcbcf511b1693f3fe735bde511/cras/src/Makefile.am?format=TEXT -O- | base64 -d > "$CRASBUILDTMP/cras/src/Makefile.am"
+
 # Build CRAS ALSA plugin for the given architecture ($1)
 # A blank parameter means we are building for the native architecture.
 build_cras() {
