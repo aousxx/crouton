@@ -59,7 +59,6 @@ fi
 
 mkdir -p "$CRASBUILDTMP/cras/src"
 wget https://chromium.googlesource.com/chromiumos/third_party/adhd/+/c2ece09f69565afcbcf511b1693f3fe735bde511/cras/src/Makefile.am?format=TEXT -O- | base64 -d > "$CRASBUILDTMP/cras/src/Makefile.am"
-wget https://chromium.googlesource.com/chromiumos/third_party/adhd/+/factory-2305.B/cras/src/tests/cras_test_client.c?format=TEXT -O- | base64 -d > "$CRASBUILDTMP/cras/src/tests/cras_test_client.c"
 # Build CRAS ALSA plugin for the given architecture ($1)
 # A blank parameter means we are building for the native architecture.
 build_cras() {
@@ -144,23 +143,6 @@ void cras_sbc_codec_destroy(struct cras_audio_codec *codec) {
 }
 END
 
-        # Find the cras test client
-        cras_test_client='tools/cras_test_client/cras_test_client.c'
-        # FIXME: remove when 12334.0.0 (R77) becomes minimum target
-        if [ ! -f "$cras_test_client" ]; then
-            cras_test_client='tests/cras_test_client.c'
-        fi
-
-        # Drop SBC constants
-        sed -e 's/SBC_[A-Z0-9_]*/0/g' -i "$cras_test_client"
-
-	# FIXME(crbug.com/864815) Remove when fixed upstream
-	if [ "$cras_arch" = "i386" ]; then
-	    sed -i -e 's/Dumping AEC info to %s, stream %lu/Dumping AEC info to %s, stream %llu/' \
-		"$cras_test_client"
-	fi
-	sed -i -e 's/cras_stream_id_t stream_id;/cras_stream_id_t stream_id = 0;/' \
-	    "$cras_test_client"
 
 	# FIXME(http://crrev.com/c/1759370): Remove when R78 becomes minimum target
 	sed -i -e 's/\(strncpy.*sizeof(info.name)\));/\1 - 1); info.name[sizeof(info.name) - 1] = '"'"'\\0'"'"';/' \
@@ -190,7 +172,7 @@ END
 
                 buildlib libasound_module_pcm_cras "$extraflags"
                 buildlib libasound_module_ctl_cras "$extraflags"
-                buildexe cras_test_client "$extraflags"
+
             '
         } | sh -s -e $SETOPTIONS
 
@@ -203,7 +185,7 @@ END
         ldconfig -l "$CRASLIBDIR"/libcras.so.*.*
         /usr/bin/install -s libasound_module_pcm_cras.so "$ALSALIBDIR/"
         /usr/bin/install -s libasound_module_ctl_cras.so "$ALSALIBDIR/"
-        /usr/bin/install -s cras_test_client "$CRASBINDIR/"
+
     ) # End compilation subshell
 }
 
