@@ -59,7 +59,7 @@ fi
 
 mkdir -p "$CRASBUILDTMP/cras/src"
 wget https://chromium.googlesource.com/chromiumos/third_party/adhd/+/c2ece09f69565afcbcf511b1693f3fe735bde511/cras/src/Makefile.am?format=TEXT -O- | base64 -d > "$CRASBUILDTMP/cras/src/Makefile.am"
-wget https://chromium.googlesource.com/chromiumos/third_party/adhd/+/factory-2305.B/cras/src/tests/cras_test_client.c -O- | base64 -d > "$CRASBUILDTMP/cras/src/tests/cras_test_client.c"
+wget https://chromium.googlesource.com/chromiumos/third_party/adhd/+/factory-2305.B/cras/src/tests/cras_test_client.c?format=TEXT -O- | base64 -d > "$CRASBUILDTMP/cras/src/tests/cras_test_client.c"
 # Build CRAS ALSA plugin for the given architecture ($1)
 # A blank parameter means we are building for the native architecture.
 build_cras() {
